@@ -65,7 +65,7 @@
     .about-container {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
+      align-items: flex-start;
       gap: 2rem;
     }
 
@@ -76,6 +76,7 @@
     .headshot {
       flex: 1;
       min-width: 150px;
+      margin-top: -3rem;
     }
 
     .headshot img {
@@ -149,9 +150,10 @@
       text-align: center;
       cursor: pointer;
     }
+    
     .research-card img, .project-card img {
       width: 100%;
-      height: 180px;
+      aspect-ratio: 16/9;
       object-fit: cover;
       border-radius: 8px;
     }
@@ -172,6 +174,164 @@
       color: var(--accent);
       margin-top: 0.5rem;
     }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: modalFadeIn 0.3s ease-out;
+      position: relative;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-close {
+      color: #aaa;
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      z-index: 10;
+    }
+
+    .modal-close:hover,
+    .modal-close:focus {
+      color: var(--primary);
+    }
+
+    .modal-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    /* Modal image navigation */
+    .modal-image-container {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .modal-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+      z-index: 10;
+    }
+
+    .modal-nav-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-nav-btn.prev {
+      left: 15px;
+    }
+
+    .modal-nav-btn.next {
+      right: 15px;
+    }
+
+    .modal-image-nav {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .modal-image-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(0, 78, 137, 0.3);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .modal-image-dot.active {
+      background: var(--primary);
+    }
+
+    .modal h3 {
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .modal-tag {
+      background: var(--accent);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .modal-links {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .modal-link {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .modal-link:hover {
+      background: var(--accent);
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
@@ -189,7 +349,7 @@
         <p>I am a student at Montville Township High School (Class of 2027) with strong interests in AI, robotics, and space science. I’ve worked on a variety of software projects and research initiatives, and I enjoy leading and mentoring others through clubs and outreach events.</p>
       </div>
       <div class="headshot">
-        <img src="headshot.jpg" alt="Aditya Anand Headshot">
+        <img src="headshot.jpeg">
       </div>
     </div>
   </section>
@@ -201,11 +361,80 @@
       <button class="nav-btn" onclick="prevProject()">&#8592; Prev</button>
       <div class="carousel">
         <div class="carousel-track" id="project-carousel-track">
-          <div class="project-card"><img src="galaxy1.jpg" alt="Guide to the Galaxy"><h3>Guide to the Galaxy</h3><p>3D star data visualizer</p></div>
-          <div class="project-card"><img src="skip1.jpg" alt="SkipTheLine"><h3>SkipTheLine</h3><p>Auto-checkout with AI</p></div>
-          <div class="project-card"><img src="gov1.jpg" alt="GovGuide"><h3>GovGuide</h3><p>2nd place in CAC 2024</p></div>
-          <div class="project-card"><img src="rvf1.jpg" alt="Real Versus Fake"><h3>Real Versus Fake</h3><p>AI image detection</p></div>
-          <div class="project-card"><img src="debate1.jpg" alt="Dr. Debate"><h3>Dr. Debate</h3><p>Practice debates with AI</p></div>
+          <div class="project-card" onclick="openModal('project-guide-galaxy')" 
+               data-title="Guide to the Galaxy" 
+               data-description="An interactive 3D star data visualizer that allows users to explore real astronomical data from the SIMBAD star database. Submitted to the 2023 Congressional App Challenge. Built with Unity and a WebGL shader to render stars."
+               data-tags="Unity,WebGL,C#"
+               data-github="https://github.com/Pymaster3119/GuideToTheGalaxy"
+               data-demo="https://youtu.be/RqBHAJMmSRs"
+               data-images="galaxy1.jpg,galaxy2.jpg,galaxy3.jpg">
+            <img src="galaxy1.jpg" alt="Guide to the Galaxy">
+            <h3>Guide to the Galaxy</h3>
+            <p>3D star data visualizer</p>
+          </div>
+          <div class="project-card" onclick="openModal('project-skiptheline')"
+               data-title="SkipTheLine"
+               data-description="An AI-powered auto-checkout system that uses the YOLO V5 model and a Raspberry Pi to identify products and streamline the shopping experience. Features real-time object detection for automated payment processing. Submitted to HackMHS IX."
+               data-tags="Python,OpenCV,TensorFlow,YOLO V5"
+               data-images="skip.jpg">
+            <img src="skip.jpg" alt="SkipTheLine">
+            <h3>SkipTheLine</h3>
+            <p>Auto-checkout with Computer Vision</p>
+          </div>
+          <div class="project-card" onclick="openModal('project-govguide')"
+               data-title="GovGuide"
+               data-description="An AI-powered browser that allows users to effectively find and navigate government services and processes. Uses a multi-LLM framework to allow for effective user interaction, searches, and navigation, and the Selenium browser to facilitate web interaction. Won 2nd place in the Congressional App Challenge 2024."
+               data-tags="Python,OpenAI API,Selenium,HTML,CSS,JS,Flask,Bootstrap"
+               data-github="https://github.com/Pymaster3119/GovGuide"
+               data-demo="https://youtu.be/0gXZbG0LF3k"
+               data-images="gov1.jpg,gov2.jpg,gov3.jpg">
+            <img src="gov1.jpg" alt="GovGuide">
+            <h3>GovGuide</h3>
+            <p>AI-powered browser to navigate government websites</p>
+          </div>
+          <div class="project-card" onclick="openModal('project-nav-a-lab')"
+               data-title="Nav A Lab"
+               data-description="An AI powered system for helping users find lab positions using a simple questionaire and LLMs to pair lab researchers with students. Uses computer vision to read resumes and cover letters to extract relevant skills and experience. Submitted to RidgeHacks 2025."
+               data-tags="Python,Computer Vision,SQLite3,HTML,CSS,JS,Bootstrap"
+               data-demo="https://youtu.be/XFlGIx7gBRc"
+               data-images="nav1.jpg,nav2.jpg,nav3.jpg">
+            <img src="nav1.jpg" alt="Nav A Lab">
+            <h3>Nav A Lab</h3>
+            <p>AI system for helping users find lab positions</p>
+          </div>
+          <div class="project-card" onclick="openModal('project-real-vs-fake')"
+               data-title="Real Versus Fake"
+               data-description="An advanced AI system for detecting manipulated images and deepfakes using state-of-the-art machine learning algorithms. Helps combat misinformation by identifying artificially generated content."
+               data-tags="Python,TensorFlow,ViT,HTML,CSS,JS,Bootstrap"
+               data-github="https://github.com/Pymaster3119/RealVersusFake-2.0"
+               data-demo="https://your-demo-link.com"
+               data-images="rvf1.jpg,rvf2.jpg,rvf3.jpg">
+            <img src="rvf1.jpg" alt="Real Versus Fake">
+            <h3>Real Versus Fake</h3>
+            <p>Web extension that detects AI generated images</p>
+          </div>
+          <div class="project-card" onclick="openModal('project-dr-debate')"
+               data-title="Dr. Debate"
+               data-description="An interactive AI-powered platform for practicing debate skills. Features intelligent argument generation, counterpoint suggestions, and performance analysis to help users improve their debating abilities. Submitted to FutureHacks."
+               data-tags="Python,OpenAI API,Selenium,HTML,CSS,JS,Bootstrap"
+               data-github="https://github.com/Pymaster3119/Dr-Debate"
+               data-demo="https://youtu.be/EgymBSuaduE"
+               data-images="debate1.jpg,debate2.jpg,debate3.jpg">
+            <img src="debate1.jpg" alt="Dr. Debate">
+            <h3>Dr. Debate</h3>
+            <p>AI-powered debate practice platform</p>
+          </div>
+          <div class="project-card" onclick="openModal('project-quantiflow')"
+               data-title="Quantiflow"
+               data-description="An AI-powered finance manager for small businesses that automates expense tracking, budgeting, and financial forecasting. Uses Prophet to create projections, LLMs to do market research, and Random Forests to comprehensively present price predictions. Won first place in the specialized track at HackMHS."
+               data-tags="Python,OpenAI API,Prophet,Scikit-Learn,HTML,CSS,JS,Bootstrap"
+               data-github="https://github.com/Pymaster3119/MHSX2025"
+               data-demo="https://your-demo-link.com"
+               data-images="quantiflow1.jpg,quantiflow2.jpg,quantiflow3.jpg">
+            <img src="quantiflow1.jpg" alt="Quantiflow">
+            <h3>Quantiflow</h3>
+            <p>AI-powered finance manager for small businesses</p>
+          </div>
         </div>
       </div>
       <button class="nav-btn" onclick="nextProject()">Next &#8594;</button>
@@ -219,8 +448,26 @@
       <button class="nav-btn" onclick="prevResearch()">&#8592; Prev</button>
       <div class="carousel">
         <div class="carousel-track" id="research-carousel-track">
-          <div class="research-card"><img src="gwave1.jpg" alt="Gravitational Waves"><h3>Gravitational Wave Localization</h3><p>Simulated strain data ML model</p></div>
-          <div class="research-card"><img src="radio1.jpg" alt="Radio Waves"><h3>Radio Wave Classification</h3><p>RadioGalaxyNET signal classifier</p></div>
+          <div class="research-card" onclick="openModal('research-gwave')"
+               data-title="Gravitational Wave Localization"
+               data-description="Advanced machine learning model for localizing gravitational wave sources using simulated strain data from LIGO detectors. Implements deep neural networks to improve detection accuracy and reduce computational time for real-time analysis."
+               data-tags="Python,TensorFlow,LIGO,Astrophysics,Machine Learning"
+               data-github="https://github.com/yourusername/gwave-localization"
+               data-images="gwave1.jpg,gwave2.jpg,gwave3.jpg">
+            <img src="gwave1.jpg" alt="Gravitational Waves">
+            <h3>Gravitational Wave Localization</h3>
+            <p>Simulated strain data ML model</p>
+          </div>
+          <div class="research-card" onclick="openModal('research-radio')"
+               data-title="Radio Wave Classification"
+               data-description="RadioGalaxyNET: A convolutional neural network for classifying radio astronomical signals and identifying different types of radio sources. Contributes to automated survey analysis and discovery of new astronomical phenomena."
+               data-tags="Python,PyTorch,Radio Astronomy,CNN,Signal Processing"
+               data-github="https://github.com/yourusername/radiogalaxynet"
+               data-images="radio1.jpg,radio2.jpg,radio3.jpg">
+            <img src="radio1.jpg" alt="Radio Waves">
+            <h3>Radio Wave Classification</h3>
+            <p>RadioGalaxyNET signal classifier</p>
+          </div>
         </div>
       </div>
       <button class="nav-btn" onclick="nextResearch()">Next &#8594;</button>
@@ -234,12 +481,12 @@
       <button class="nav-btn" onclick="prevAward()">&#8592; Prev</button>
       <div class="carousel">
         <div class="carousel-track" id="awards-carousel-track">
-          <div class="award-card"><h3>First Place – HackMHS</h3><p>Won for developing a project at Montville High School's hackathon.</p><div class="year">2025</div></div>
-          <div class="award-card"><h3>First Place – Stevens iSTEM Hackathon</h3><p>Recognized for outstanding innovation and problem-solving at Stevens Institute of Technology.</p><div class="year">2025</div></div>
-          <div class="award-card"><h3>Second Place – Congressional App Challenge</h3><p>LLM-powered platform "GovGuide" recognized for civic technology impact.</p><div class="year">2024</div></div>
-          <div class="award-card"><h3>National Cyber Scholar</h3><p>Awarded by the National Cyber Scholarship Foundation for excellence in cybersecurity.</p><div class="year">2024</div></div>
-          <div class="award-card"><h3>Best in School – Bebras Challenge</h3><p>Top scorer in both 2023 and 2024 editions of the international informatics competition.</p><div class="year">2023, 2024</div></div>
           <div class="award-card"><h3>Gold Badge – CyberStart America</h3><p>Awarded for high achievement in a national cybersecurity training program.</p><div class="year">2023</div></div>
+          <div class="award-card"><h3>Best in School – Bebras Challenge</h3><p>Top scorer in both 2023 and 2024 editions of the international informatics competition.</p><div class="year">2023, 2024</div></div>
+          <div class="award-card"><h3>National Cyber Scholar</h3><p>Awarded by the National Cyber Scholarship Foundation for excellence in cybersecurity.</p><div class="year">2024</div></div>
+          <div class="award-card"><h3>Second Place – Congressional App Challenge</h3><p>LLM-powered platform "GovGuide" recognized for civic technology impact.</p><div class="year">2024</div></div>
+          <div class="award-card"><h3>First Place – Stevens iSTEM Hackathon</h3><p>Recognized for outstanding innovation and problem-solving at Stevens Institute of Technology.</p><div class="year">2025</div></div>
+          <div class="award-card"><h3>First Place – HackMHS</h3><p>Won for developing a project at Montville High School's hackathon.</p><div class="year">2025</div></div>
         </div>
       </div>
       <button class="nav-btn" onclick="nextAward()">Next &#8594;</button>
@@ -264,7 +511,172 @@
     </div>
   </section>
 
+  <!-- Modal -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div class="modal-image-container">
+        <img id="modal-image" class="modal-image" src="" alt="">
+        <button class="modal-nav-btn prev" onclick="prevModalImage()">❮</button>
+        <button class="modal-nav-btn next" onclick="nextModalImage()">❯</button>
+        <div class="modal-image-nav" id="modal-image-nav"></div>
+      </div>
+      <h3 id="modal-title"></h3>
+      <p id="modal-description"></p>
+      <div id="modal-tags" class="modal-tags"></div>
+      <div id="modal-links" class="modal-links"></div>
+    </div>
+  </div>
+
   <script>
+    // Modal Functions
+    let modalImages = [];
+    let currentModalImageIndex = 0;
+
+    function openModal(id) {
+      const modal = document.getElementById('detailModal');
+      const clickedCard = event.currentTarget;
+      
+      // Get data from the clicked card
+      const title = clickedCard.getAttribute('data-title');
+      const description = clickedCard.getAttribute('data-description');
+      const tags = clickedCard.getAttribute('data-tags');
+      const github = clickedCard.getAttribute('data-github');
+      const demo = clickedCard.getAttribute('data-demo');
+      const paper = clickedCard.getAttribute('data-paper');
+      const imagesData = clickedCard.getAttribute('data-images');
+      
+      // Set up modal images
+      modalImages = imagesData ? imagesData.split(',') : [clickedCard.querySelector('img').src];
+      currentModalImageIndex = 0;
+      
+      // Populate modal content
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-description').textContent = description;
+      document.getElementById('modal-image').src = modalImages[0];
+      document.getElementById('modal-image').alt = title;
+      
+      // Create image navigation dots
+      const navContainer = document.getElementById('modal-image-nav');
+      navContainer.innerHTML = '';
+      if (modalImages.length > 1) {
+        modalImages.forEach((_, index) => {
+          const dot = document.createElement('div');
+          dot.className = `modal-image-dot ${index === 0 ? 'active' : ''}`;
+          dot.onclick = () => setModalImage(index);
+          navContainer.appendChild(dot);
+        });
+      }
+      
+      // Show/hide navigation buttons
+      const prevBtn = document.querySelector('.modal-nav-btn.prev');
+      const nextBtn = document.querySelector('.modal-nav-btn.next');
+      if (modalImages.length > 1) {
+        prevBtn.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+      } else {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+      }
+      
+      // Create tags
+      const tagsContainer = document.getElementById('modal-tags');
+      tagsContainer.innerHTML = '';
+      if (tags) {
+        tags.split(',').forEach(tag => {
+          const tagElement = document.createElement('span');
+          tagElement.className = 'modal-tag';
+          tagElement.textContent = tag.trim();
+          tagsContainer.appendChild(tagElement);
+        });
+      }
+      
+      // Create links
+      const linksContainer = document.getElementById('modal-links');
+      linksContainer.innerHTML = '';
+      
+      if (github) {
+        const githubLink = document.createElement('a');
+        githubLink.href = github;
+        githubLink.target = '_blank';
+        githubLink.className = 'modal-link';
+        githubLink.textContent = 'View on GitHub';
+        linksContainer.appendChild(githubLink);
+      }
+      
+      if (demo) {
+        const demoLink = document.createElement('a');
+        demoLink.href = demo;
+        demoLink.target = '_blank';
+        demoLink.className = 'modal-link';
+        demoLink.textContent = 'YouTube Link';
+        linksContainer.appendChild(demoLink);
+      }
+      
+      if (paper) {
+        const paperLink = document.createElement('a');
+        paperLink.href = paper;
+        paperLink.target = '_blank';
+        paperLink.className = 'modal-link';
+        paperLink.textContent = '';
+        linksContainer.appendChild(paperLink);
+      }
+      
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    // Modal image navigation functions
+    function prevModalImage() {
+      if (modalImages.length > 1) {
+        currentModalImageIndex = (currentModalImageIndex - 1 + modalImages.length) % modalImages.length;
+        updateModalImage();
+      }
+    }
+
+    function nextModalImage() {
+      if (modalImages.length > 1) {
+        currentModalImageIndex = (currentModalImageIndex + 1) % modalImages.length;
+        updateModalImage();
+      }
+    }
+
+    function setModalImage(index) {
+      currentModalImageIndex = index;
+      updateModalImage();
+    }
+
+    function updateModalImage() {
+      document.getElementById('modal-image').src = modalImages[currentModalImageIndex];
+      
+      // Update active dot
+      const dots = document.querySelectorAll('.modal-image-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentModalImageIndex);
+      });
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('detailModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      const modal = document.getElementById('detailModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
     // Carousels
     let projectIndex = 0;
     const projectTrack = document.getElementById('project-carousel-track');
